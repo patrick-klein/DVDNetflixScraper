@@ -18,7 +18,7 @@ class NetflixSession:
     # Configure logfile for debugging
     logging.basicConfig(filename='session.log',
                         filemode='w', level=logging.DEBUG)
-    logging.info('Re-opening log file')
+    logging.info('Opening log file')
 
     def __init__(self, cookies_file='./cookie.pkl'):
         """
