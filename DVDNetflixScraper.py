@@ -1,4 +1,4 @@
-"""This module contains the netflix class."""
+"""This module contains the NetflixSession class."""
 
 from bs4 import BeautifulSoup
 from selenium import webdriver
@@ -12,16 +12,17 @@ import pickle
 import logging
 
 
-class netflix:
+class NetflixSession:
     """This is a class capable of scraping DVD Netflix pages."""
 
     # Configure logfile for debugging
-    logging.basicConfig(filename='DVDNetflixScraper.log', level=logging.DEBUG)
+    logging.basicConfig(
+        filename='./log/DVDNetflixScraper.log', level=logging.DEBUG)
     logging.info('Re-opening log file')
 
     def __init__(self, cookies_file='./cookie.pkl'):
         """
-        Create instance of netflix class for scraping movie.  Tries to load a
+        Create instance of class for scraping movie.  Tries to load a
             set of cookies with this instance, which are required to view
             unavailable movies/shows, and are needed to get ratings.
 
@@ -99,12 +100,23 @@ class netflix:
             raise Exception('No matching movies were found')
         else:
             logging.info('movie url: ' + link_to_movie_page)
+        self.movie_url = link_to_movie_page
 
         # load movie/show page, and save parsed html for further use
-        driver.get(link_to_movie_page)
+        driver.get(self.movie_url)
         html = driver.page_source
         self.movie_page = BeautifulSoup(html, "html.parser")
         driver.quit()
+
+    def print_movie_url(self):
+        """This methods prints the url of the loaded movie."""
+        print(self.movie_url)
+
+    def get_synopsis(self):
+        """This methods parses movie page and returns the synopsis."""
+        synopsis = self.movie_page.find(
+            'p', attrs={"class": "synopsis"}).get_text()
+        return(synopsis)
 
     def get_genres(self):
         """This methods parses movie page and returns list of genres."""
@@ -135,7 +147,7 @@ class netflix:
         rating_info = self.movie_page.find('div', id='ratingInfo')
         guess_rating = rating_info.find_all(
             'div')[0].find('span').get_text().split(' ')[0]
-        return guess_rating
+        return float(guess_rating)
 
     def get_avg_rating(self):
         """
@@ -147,4 +159,4 @@ class netflix:
         rating_info = self.movie_page.find('div', id='ratingInfo')
         avg_rating = rating_info.find_all('div')[1].find(
             'span').get_text().split(' ')[0]
-        return avg_rating
+        return float(avg_rating)

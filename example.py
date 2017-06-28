@@ -1,10 +1,11 @@
 from netflix import netflix
 
-h = netflix()
+session = netflix()
 
-h.load_movie('Deliverance')
+session.load_movie('alice in wonderland', 1950)
 
-print(h.get_genres())
-print(h.get_moods())
-print(h.get_guess_rating())
-print(h.get_avg_rating())
+print(session.get_synopsis())
+print(session.get_genres())
+print(session.get_moods())
+print(session.get_guess_rating())
+print(session.get_avg_rating())
