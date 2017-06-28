@@ -21,18 +21,18 @@ class netflix:
 
     def __init__(self, cookies_file='./cookie.pkl'):
         """
-        Create instance of netflix class for scraping movie.  Associates a set
-            of cookies with this instance, which are required to view
+        Create instance of netflix class for scraping movie.  Tries to load a
+            set of cookies with this instance, which are required to view
             unavailable movies/shows, and are needed to get ratings.
 
         cookies_file: string of path to pickle file containing cookies
-                        pass None to parameter to init without cookies
-                        (actions which require cookies will not work)
+                        (if cookies aren't loaded, script will continue
+                        without them)
         """
-        if cookies_file:
+        try:
             self.cookies = pickle.load(open(cookies_file, "rb"))
             logging.info('Cookies loaded from ' + cookies_file)
-        else:
+        except:
             self.cookies = None
             logging.info('No cookies were loaded on init')
 
@@ -50,9 +50,10 @@ class netflix:
         driver = webdriver.Chrome(executable_path='./chromedriver')
 
         # need to load some netflix domain before adding cookies
-        driver.get('https://dvd.netflix.com/404')
-        for i in range(len(self.cookies)):
-            driver.add_cookie(self.cookies[i])
+        if self.cookies:
+            driver.get('https://dvd.netflix.com/404')
+            for i in range(len(self.cookies)):
+                driver.add_cookie(self.cookies[i])
 
         # insert search string into url (effectively searching for 'search_name search_year')
         search_url = 'https://dvd.netflix.com/Search?oq=&ac_posn=&search_submit=&v1=' + \
