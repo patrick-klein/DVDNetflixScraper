@@ -1,6 +1,6 @@
-from netflix import netflix
+from DVDNetflixScraper import NetflixSession
 
-session = netflix()
+session = NetflixSession()
 
 session.load_movie('alice in wonderland', 1950)
 

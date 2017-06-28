@@ -16,8 +16,7 @@ class NetflixSession:
     """This is a class capable of scraping DVD Netflix pages."""
 
     # Configure logfile for debugging
-    logging.basicConfig(
-        filename='./log/DVDNetflixScraper.log', level=logging.DEBUG)
+    logging.basicConfig(filename='session.log', level=logging.DEBUG)
     logging.info('Re-opening log file')
 
     def __init__(self, cookies_file='./cookie.pkl'):
