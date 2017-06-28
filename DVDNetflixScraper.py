@@ -16,7 +16,8 @@ class NetflixSession:
     """This is a class capable of scraping DVD Netflix pages."""
 
     # Configure logfile for debugging
-    logging.basicConfig(filename='session.log', level=logging.DEBUG)
+    logging.basicConfig(filename='session.log',
+                        filemode='w', level=logging.DEBUG)
     logging.info('Re-opening log file')
 
     def __init__(self, cookies_file='./cookie.pkl'):
@@ -57,7 +58,9 @@ class NetflixSession:
 
         # insert search string into url (effectively searching for 'search_name search_year')
         search_url = 'https://dvd.netflix.com/Search?oq=&ac_posn=&search_submit=&v1=' + \
-            search_name.replace(' ', '+') + '+' + str(search_year)
+            search_name.replace(' ', '+')
+        if search_year:
+            search_url = search_url + '+' + str(search_year)
         logging.info('search url: ' + search_url)
 
         # retrieve search page, and wait for results to load
