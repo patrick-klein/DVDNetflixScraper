@@ -66,7 +66,7 @@ https://dvd.netflix.com/Movie/Alice-in-Wonderland/70113536?strackid=e90ad5b09382
 https://dvd.netflix.com/Movie/Alice-in-Wonderland/60031746?strackid=3a75bc6e9f9fa30c_2_srl&trkid=201891639
 ```
 
-Now that the correct movie has loaded, you can start pulling data from the saved html.  Currently, you can pull the genres and moods, as well as the ratings if you are signed in.
+Now that the correct movie has loaded, you can start pulling data from the saved html.  Currently, you can pull the synopsis, genres, and moods, as well as the ratings if you are signed in.
 
 ```
 >>> session.get_synopsis()
