@@ -60,8 +60,10 @@ class NetflixSession:
         # insert search string into url (effectively searching for 'search_name search_year')
         search_url = 'https://dvd.netflix.com/Search?oq=&ac_posn=&search_submit=&v1=' + \
             search_name.replace(' ', '+')
-        if search_year:
-            search_url = search_url + '+' + str(search_year)
+        # adding the year helps when the search name is the name of a genre,
+        #   like 'Halloween', but leads to bad results too often
+        # if search_year:
+        #    search_url = search_url + '+' + str(search_year)
         logging.info('search url: ' + search_url)
 
         # retrieve search page, and wait for results to load
@@ -145,7 +147,7 @@ class NetflixSession:
         driver.quit()
 
     def get_movie_url(self):
-        """This methods gets the url of the loaded movie."""
+        """This methods returns the url of the loaded movie."""
         return self.movie_url
 
     def get_synopsis(self):
@@ -204,9 +206,9 @@ class NetflixSession:
         return movie_image
 
     def get_movie_name(self):
-        """This method returns the instance variable movie_name"""
+        """This method returns a string of the loaded movie's name"""
         return self.movie_name
 
     def get_movie_year(self):
-        """This method returns the instance variable movie_year"""
+        """This method returns a string of the loaded movie's year"""
         return self.movie_year
