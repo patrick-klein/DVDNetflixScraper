@@ -15,7 +15,7 @@ from bs4 import BeautifulSoup
 from DVDNetflixScraper import NetflixSession
 
 
-def update_tvshow_nfo(tv_show_name,
+def update_tvshow_nfo(tv_show_name=None,
                       tv_show_folder='/Volumes/Media/TV/',
                       data_selections={'landscape': True,
                                        'plot': True,
@@ -31,6 +31,9 @@ def update_tvshow_nfo(tv_show_name,
     tv_show_folder: exact string to path of TV shows
     data_selections: dictionary of data in .nfo file to be updated
     """
+
+    if tv_show_name == None:
+        tv_show_name = input('TV show name: ')
 
     # get folder of TV show and .nfo file
     path_to_tv_show = tv_show_folder + tv_show_name + '/'
