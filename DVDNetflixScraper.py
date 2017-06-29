@@ -17,7 +17,7 @@ class NetflixSession:
 
     # Configure logfile for debugging
     logging.basicConfig(filename='session.log',
-                        filemode='w', level=logging.DEBUG)
+                        filemode='w', level=logging.INFO)
     logging.info('Opening log file')
 
     def __init__(self, cookies_file='./cookie.pkl'):
@@ -40,7 +40,8 @@ class NetflixSession:
     def load_movie(self, search_name, search_year=None):
         """
         This method loads the Netflix page for the movie/show.  Must be called
-            before requesting scraped data for movie
+            before requesting scraped data for movie.  Sets the instance
+            variables movie_name, movie_year, and movie_page
 
         search_name: string of the the name of the movie/show being searched
         search_year: if available, only a movie/show within 2 years of specified
@@ -85,11 +86,13 @@ class NetflixSession:
         link_to_movie_page = None
         for result in result_list:
             result_name = result.find('a').get_text()
+            result_year = int(result.find(
+                attrs={"class": "year"}).get_text())
+            self.movie_name = result_name
+            self.movie_year = result_year
             if fuzz.ratio(search_name.lower(), result_name.lower()) < 80:  # value open to tweaking
                 continue
             if search_year:
-                result_year = int(result.find(
-                    attrs={"class": "year"}).get_text())
                 if abs(result_year - search_year) < 2:
                     link_to_movie_page = result.find('a').get('href')
                     break
@@ -110,15 +113,46 @@ class NetflixSession:
         self.movie_page = BeautifulSoup(html, "html.parser")
         driver.quit()
 
-    def print_movie_url(self):
-        """This methods prints the url of the loaded movie."""
-        print(self.movie_url)
+    def load_movie_with_url(self, movie_url):
+        """
+        This method loads the Netflix page for the movie/show.  Must be called
+            before requesting scraped data for movie.  Sets the instance
+            variables movie_name, movie_year, and movie_page
+
+        movie_url: a string of a direct link to the webpage
+        """
+
+        # create a driver using chromedriver
+        driver = webdriver.Chrome(executable_path='./chromedriver')
+
+        # need to load some netflix domain before adding cookies
+        if self.cookies:
+            driver.get('https://dvd.netflix.com/404')
+            for i in range(len(self.cookies)):
+                driver.add_cookie(self.cookies[i])
+
+        # read the url in the input
+        self.movie_url = movie_url
+
+        # load movie/show page, and save parsed html for further use
+        driver.get(self.movie_url)
+        html = driver.page_source
+        self.movie_page = BeautifulSoup(html, "html.parser")
+        self.movie_name = self.movie_page.find(
+            'h1', attrs={"class": "title"}).get_text()
+        self.movie_year = int(self.movie_page.find(
+            'span', attrs={"class": "year"}).get_text())
+        driver.quit()
+
+    def get_movie_url(self):
+        """This methods gets the url of the loaded movie."""
+        return self.movie_url
 
     def get_synopsis(self):
         """This methods parses movie page and returns the synopsis."""
         synopsis = self.movie_page.find(
             'p', attrs={"class": "synopsis"}).get_text()
-        return(synopsis)
+        return synopsis
 
     def get_genres(self):
         """This methods parses movie page and returns list of genres."""
@@ -153,7 +187,7 @@ class NetflixSession:
 
     def get_avg_rating(self):
         """
-        This methods parses movie page and returns avg rating
+        This method parses movie page and returns avg rating
             or None if no cookies were provided
         """
         if self.cookies == None:
@@ -162,3 +196,9 @@ class NetflixSession:
         avg_rating = rating_info.find_all('div')[1].find(
             'span').get_text().split(' ')[0]
         return float(avg_rating)
+
+    def get_image_link(self):
+        """This method parses movie page and returns the link to the image"""
+        movie_image = 'http:' + \
+            self.movie_page.find('img', attrs={"class": "boxShotImg"})['src']
+        return movie_image
