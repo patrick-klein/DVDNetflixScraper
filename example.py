@@ -27,8 +27,8 @@ print(session.get_image_link())
 
 # you can skip the search page when you already have the url
 session.load_movie_with_url(deliverance_movie_url)
-print(session.movie_name)
-print(session.movie_year)
+print(session.get_movie_name())
+print(session.get_movie_year())
 
 # if signed in, this will load correctly
 session_with_cookies = NetflixSession()

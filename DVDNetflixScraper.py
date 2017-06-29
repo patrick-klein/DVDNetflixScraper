@@ -202,3 +202,11 @@ class NetflixSession:
         movie_image = 'http:' + \
             self.movie_page.find('img', attrs={"class": "boxShotImg"})['src']
         return movie_image
+
+    def get_movie_name(self):
+        """This method returns the instance variable movie_name"""
+        return self.movie_name
+
+    def get_movie_year(self):
+        """This method returns the instance variable movie_year"""
+        return self.movie_year
