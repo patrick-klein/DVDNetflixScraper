@@ -66,7 +66,7 @@ Now if you need to load the movie again in the future, you can pass the url dire
 1972
 ```
 
-Because there is ambiguity some movies/shows, you can also specify the year when loading a movie from a search.  This will only load a result if it matches +/- 1 year.
+Because there is ambiguity with some movies/shows, you can also specify the year when loading from a search.  This will only load a result if it matches +/- 1 year.
 
 ```
 >>> session.load_movie('Alice in Wonderland',2010)
