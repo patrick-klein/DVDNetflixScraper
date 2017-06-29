@@ -6,15 +6,16 @@ from DVDNetflixScraper import NetflixSession
 # create a new session
 session = NetflixSession()
 
-# search for a movie, print the page that it found
+# search for a movie, and save the url for that site
 session.load_movie('Deliverance')
-session.print_movie_url()
+deliverance_movie_url = session.get_movie_url()
+print(deliverance_movie_url)
 
 # search for movies with the same name, but different years
 session.load_movie('Alice in Wonderland', 2010)
-session.print_movie_url()
-session.load_movie('Alice in Wonderland', 1950)
-session.print_movie_url()
+print(session.get_movie_url())
+session.load_movie('Alice in Wonderland', 1950)     # actually 1951
+print(session.get_movie_url())
 
 # pull information from the web page.  ratings only show if signed in
 print(session.get_synopsis())
@@ -22,6 +23,12 @@ print(session.get_genres())
 print(session.get_moods())
 print(session.get_guess_rating())
 print(session.get_avg_rating())
+print(session.get_image_link())
+
+# you can skip the search page when you already have the url
+session.load_movie_with_url(deliverance_movie_url)
+print(session.movie_name)
+print(session.movie_year)
 
 # if signed in, this will load correctly
 session_with_cookies = NetflixSession()
