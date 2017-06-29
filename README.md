@@ -94,8 +94,14 @@ Now that the correct movie has loaded, you can start pulling data from the saved
 'http://secure.netflix.com/us/boxshots/ghd/60031746.jpg'
 ```
 
-# NetflixSession Methods
+### Notes
 
+If you're experiencing an error where chromedriver is not correctly quitting every time, you can kill all of these instances using the following command on macOS:
+
+```$ pkill -f chromedriver```
+
+# NetflixSession Methods
+ 
 <table class="tg">
   <tr>
     <th class="tg-s6z2">Method</th>
@@ -148,12 +154,5 @@ movie_url: a string of a direct link to the webpage</td>
     <td class="tg-s6z2">get_image_link()</td>
     <td class="tg-s6z2">Returns the link to the image of the loaded movie</td>
   </tr>
-
-
-## Notes
-
-If you're experiencing an error where chromedriver is not correctly quitting every time, you can kill all of these instances using the following command on macOS:
-
-```$ pkill -f chromedriver```
 
 
