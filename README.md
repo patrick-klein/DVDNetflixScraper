@@ -36,11 +36,11 @@ Start by importing the module so that the class is available.
 
 ```>>> from DVDNetflixScraper import NetflixSession```
 
-Create a new instance of the class.  It will search for 'cookie.pkl' in the current directory and associate the cookies with the session.  If it's unable to find or load the file, the session will still initialize without cookies.
+Create a new instance of the class.
 
 ```>>> session = NetflixSession()```
 
-Alternatively, you can pass in an argument that specifies a pickle file containing the cookies.
+It will search for 'cookie.pkl' in the current directory and associate the cookies with the session.  If it's unable to find or load the file, the session will still initialize without cookies.  Alternatively, you can pass in an argument that specifies a pickle file containing the cookies.
 
 ```>>> session = NetflixSession(cookies_file='~/some/other/file.pkl')```
 
@@ -48,25 +48,36 @@ Load a movie by specifying a search string.  During this call, the webdriver wil
 
 ```>>> session.load_movie('Deliverance')```
 
-The first result that is a close text match will be selected.  The exact url is saved in the log, but you can also view it using the "print_movie_url()" method.
+The first result that is a close text match will be selected.  After the movie is loaded, you can save the url by calling the "get_movie_url()".
 
 ```
->>> session.print_movie_url()
-https://dvd.netflix.com/Movie/Deliverance/433193?strackid=1a3cb801d6f27aff_1_srl&trkid=201891639
+>>> deliverance_movie_url = session.get_movie_url()
+>>> deliverance_movie_url
+'https://dvd.netflix.com/Movie/Deliverance/433193?strackid=13c7f06deb5662ef_1_srl&trkid=201891639'
 ```
 
-Because there is ambiguity with some searches, you can also specify the year of the movie/show.  This will only load a result if it matches +/- 1 year.
+Now if you need to load the movie again in the future, you can pass the url directly to skip the search page.  You can verify this works by checking the name and year of the loaded movie.
+
+```
+>>> session.load_movie_with_url(deliverance_movie_url)
+>>> session.get_movie_name()
+'Deliverance'
+>>> session.get_movie_year()
+1972
+```
+
+Because there is ambiguity some movies/shows, you can also specify the year when loading a movie from a search.  This will only load a result if it matches +/- 1 year.
 
 ```
 >>> session.load_movie('Alice in Wonderland',2010)
->>> session.print_movie_url()
-https://dvd.netflix.com/Movie/Alice-in-Wonderland/70113536?strackid=e90ad5b09382b08_1_srl&trkid=201891639
+>>> session.get_movie_url()
+'https://dvd.netflix.com/Movie/Alice-in-Wonderland/70113536?strackid=206e723a68719b5d_1_srl&trkid=201891639'
 >>> session.load_movie('Alice in Wonderland',1950)
->>> session.print_movie_url()
-https://dvd.netflix.com/Movie/Alice-in-Wonderland/60031746?strackid=3a75bc6e9f9fa30c_2_srl&trkid=201891639
+>>> session.get_movie_url()
+'https://dvd.netflix.com/Movie/Alice-in-Wonderland/60031746?strackid=d4341b42716abe_2_srl&trkid=201891639'
 ```
 
-Now that the correct movie has loaded, you can start pulling data from the saved html.  Currently, you can pull the synopsis, genres, and moods, as well as the ratings if you are signed in.
+Now that the correct movie has loaded, you can start pulling data from the saved html.  Currently, you can pull the synopsis, image url, genres, and moods, as well as the ratings if you are signed in.
 
 ```
 >>> session.get_synopsis()
@@ -79,14 +90,70 @@ Now that the correct movie has loaded, you can start pulling data from the saved
 3.6
 >>> session.get_avg_rating()
 4
+>>> session.get_image_link()
+'http://secure.netflix.com/us/boxshots/ghd/60031746.jpg'
 ```
 
-## Planned Features
+# NetflixSession Methods
 
-* Add a method to check the sign-in status of the session
+<table class="tg">
+  <tr>
+    <th class="tg-s6z2">Method</th>
+    <th class="tg-s6z2">Description</th>
+  </tr>
+  <tr>
+    <td class="tg-s6z2">load_movie(search_name, search_year=None)</td>
+    <td class="tg-s6z2">Loads the Netflix page for the movie/show by starting a search.  Must be called before requesting scraped data for movie.<br><br>
+search_name: string of the the name of the movie/show being searched<br>
+search_year: if available, only a movie/show within 2 years of specified year will be loaded</td>
+  </tr>
+  <tr>
+    <td class="tg-s6z2">load_movie_with_url(movie_url):</td>
+    <td class="tg-s6z2">Loads the Netflix page for the movie/show directly.  Must be called before requesting scraped data for movie.<br><br>
+movie_url: a string of a direct link to the webpage</td>
+  </tr>
+  <tr>
+    <td class="tg-s6z2">get_movie_url()</td>
+    <td class="tg-s6z2">Returns the url of the loaded movie as a string</td>
+  </tr>
+  <tr>
+    <td class="tg-s6z2">get_movie_name()</td>
+    <td class="tg-s6z2">Returns the name of the loaded movie as a string</td>
+  </tr>
+  <tr>
+    <td class="tg-s6z2">get_movie_year()</td>
+    <td class="tg-s6z2">Returns the year of the loaded movie as a string</td>
+  </tr>
+  <tr>
+    <td class="tg-s6z2">get_synopsis()</td>
+    <td class="tg-s6z2">Returns the synopsis of the movie as a string</td>
+  </tr>
+  <tr>
+    <td class="tg-s6z2">get_genres()</td>
+    <td class="tg-s6z2">Returns the genres of the loaded movie as a list of strings</td>
+  </tr>
+  <tr>
+    <td class="tg-s6z2">get_moods()</td>
+    <td class="tg-s6z2">Returns the moods of the loaded movie as a list of strings if available, otherwise None</td>
+  </tr>
+  <tr>
+    <td class="tg-s6z2">get_guess_rating()</td>
+    <td class="tg-s6z2">Returns the best guess rating of the loaded movie as a float, or None if the session isn't signed in</td>
+  </tr>
+  <tr>
+    <td class="tg-s6z2">get_avg_rating()</td>
+    <td class="tg-s6z2">Returns the average rating of the loaded movie as a float, or None if the session isn't signed in</td>
+  </tr>
+  <tr>
+    <td class="tg-s6z2">get_image_link()</td>
+    <td class="tg-s6z2">Returns the link to the image of the loaded movie</td>
+  </tr>
+
 
 ## Notes
 
 If you're experiencing an error where chromedriver is not correctly quitting every time, you can kill all of these instances using the following command on macOS:
 
 ```$ pkill -f chromedriver```
+
+
