@@ -94,7 +94,7 @@ Now that the correct movie has loaded, you can start pulling data from the saved
 'http://secure.netflix.com/us/boxshots/ghd/60031746.jpg'
 ```
 
-### Notes
+### Note
 
 If you're experiencing an error where chromedriver is not correctly quitting every time, you can kill all of these instances using the following command on macOS:
 
