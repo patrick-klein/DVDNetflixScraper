@@ -86,27 +86,40 @@ class NetflixSession:
 
         # loop through results to find text and year(optional) match
         link_to_movie_page = None
+        results = []
         for result in result_list:
             result_name = result.find('a').get_text()
             result_year = int(result.find(
                 attrs={"class": "year"}).get_text())
+            result_url = result.find('a').get('href')
+            results.append((result_name, result_year, result_url))
             self.movie_name = result_name
             self.movie_year = result_year
             if fuzz.ratio(search_name.lower(), result_name.lower()) < 80:  # value open to tweaking
                 continue
             if search_year:
                 if abs(result_year - search_year) < 2:
-                    link_to_movie_page = result.find('a').get('href')
+                    link_to_movie_page = result_url
                     break
             else:
-                link_to_movie_page = result.find('a').get('href')
+                link_to_movie_page = result_url
                 break
         if link_to_movie_page == None:
             logging.error('No matching movies were found')
-            driver.quit()
-            raise Exception('No matching movies were found')
-        else:
-            logging.info('movie url: ' + link_to_movie_page)
+            # print results and manually select
+            print('No matches found.  Did you mean...')
+            for index, result in list(enumerate(results)):
+                print(str(index) + ' ' + result[0] + ' ' + str(result[1]))
+            print(str(len(results)) + ' None of these')
+            selection = int(input('Select one: '))
+            if selection < len(results):
+                self.movie_name = results[selection][0]
+                self.movie_year = results[selection][1]
+                link_to_movie_page = results[selection][2]
+            else:
+                driver.quit()
+                raise Exception('No matching movies were found')
+        logging.info('movie url: ' + link_to_movie_page)
         self.movie_url = link_to_movie_page
 
         # load movie/show page, and save parsed html for further use
