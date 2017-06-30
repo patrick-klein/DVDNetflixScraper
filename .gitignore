@@ -1,0 +1,7 @@
+__pycache__
+*.pkl
+chromedriver
+.DS_Store
+*.log
+test.py
+*.jpg
