@@ -2,7 +2,7 @@
 This module contains two primary functions that can modify .nfo files
     using the DVD Netflix Scraper
 
-These functions are intented to be called from the REPL, while in the
+These functions are intended to be called from the REPL, while in the
     folder DVDNetflixScraper.
 
 The functions will display the scraped data to the console, ask the user
