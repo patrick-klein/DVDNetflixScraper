@@ -16,7 +16,7 @@ from DVDNetflixScraper import NetflixSession
 
 
 def update_tvshow_nfo(tv_show_name=None,
-                      tv_show_folder='/Volumes/Elements/TV/',
+                      tv_show_folder='/Volumes/Media/TV/',
                       data_selections={'landscape': False,
                                        'plot': True,
                                        'outline': True,
@@ -190,7 +190,7 @@ def update_movie_nfo(movie_name_and_year,
     #       (y)es to selection
     #       (n)o to all
     print(' ')
-    answer = input('Save?    ')
+    answer = input('Save?(y/n) ')
 
     if answer == 'y':
         if data_selections['plot']:
@@ -247,15 +247,17 @@ def update_rating(soup, rating):
 
 
 def add_netflix_tag_tvshow(soup, show_url):
-    netflix_tag = soup.new_tag('dvd-netflix-url')
-    netflix_tag.string = show_url
-    soup.find('tvshow').append(netflix_tag)
+    if not soup.find('dvd-netflix-url'):
+        netflix_tag = soup.new_tag('dvd-netflix-url')
+        netflix_tag.string = show_url
+        soup.find('tvshow').append(netflix_tag)
 
 
 def add_netflix_tag_movie(soup, movie_url):
-    netflix_tag = soup.new_tag('dvd-netflix-url')
-    netflix_tag.string = movie_url
-    soup.find('movie').append(netflix_tag)
+    if not soup.find('dvd-netflix-url'):
+        netflix_tag = soup.new_tag('dvd-netflix-url')
+        netflix_tag.string = movie_url
+        soup.find('movie').append(netflix_tag)
 
 
 def update_img(img_url):
