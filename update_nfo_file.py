@@ -16,12 +16,12 @@ from DVDNetflixScraper import NetflixSession
 
 
 def update_tvshow_nfo(tv_show_name=None,
-                      tv_show_folder='/Volumes/Media/TV/',
-                      data_selections={'landscape': True,
+                      tv_show_folder='/Volumes/Elements/TV/',
+                      data_selections={'landscape': False,
                                        'plot': True,
                                        'outline': True,
                                        'genre-moods': True,
-                                       'best-guess-rating': False,
+                                       'best-guess-rating': True,
                                        'avg-rating': False,
                                        'netflix-tag': True}):
     """
@@ -52,6 +52,7 @@ def update_tvshow_nfo(tv_show_name=None,
         session.load_movie_with_url(show_url)
     else:
         tv_show_year = int(soup.find('premiered').get_text()[0:4])
+        print('TV show year: ' + str(tv_show_year))
         session.load_movie(tv_show_name, tv_show_year)
 
     # scrape all of the data into variables
@@ -76,13 +77,14 @@ def update_tvshow_nfo(tv_show_name=None,
         print(moods)
     if data_selections['best-guess-rating']:
         print(' ')
-        print(guess_rating)
+        print(soup.find('rating').get_text() + ' -> ' + str(2 * guess_rating))
     if data_selections['avg-rating']:
         print(' ')
         print(avg_rating)
 
     # ask for confirmations here
     #       (y)es to selection
+    #       (c)ustom selection
     #       (n)o to all
     print(' ')
     answer = input('Save?    ')
@@ -103,9 +105,21 @@ def update_tvshow_nfo(tv_show_name=None,
             update_img(img_url)
         if data_selections['netflix-tag']:
             add_netflix_tag_tvshow(soup, movie_url)
+    elif answer == 'c':
+        if input('Synopsis?       ') == 'y':
+            update_plot(soup, synopsis)
+            update_outline(soup, synopsis)
+        if input('Genre/moods?    ') == 'y':
+            update_genre_moods(soup, genres, moods)
+        if input('Rating?         ') == 'y':
+            update_rating(soup, guess_rating)
+        #add_netflix_tag_tvshow(soup, movie_url)
+
         # save the xml file
+    if answer != 'n':
         with open(path_to_tv_show_nfo, 'w') as f:
             f.write(str(soup))
+        print(path_to_tv_show_nfo + ' updated.')
 
 
 def update_movie_nfo(movie_name_and_year,
@@ -113,7 +127,7 @@ def update_movie_nfo(movie_name_and_year,
                      data_selections={'plot': True,
                                       'outline': True,
                                       'genre-moods': True,
-                                      'best-guess-rating': False,
+                                      'best-guess-rating': True,
                                       'avg-rating': False,
                                       'netflix-tag': True}):
     """
@@ -167,7 +181,7 @@ def update_movie_nfo(movie_name_and_year,
         print(moods)
     if data_selections['best-guess-rating']:
         print(' ')
-        print(guess_rating)
+        print(soup.find('rating').get_text() + ' -> ' + str(guess_rating))
     if data_selections['avg-rating']:
         print(' ')
         print(avg_rating)
@@ -205,15 +219,24 @@ def update_plot(soup, synopsis):
 
 
 def update_genre_moods(soup, genres, moods):
+    # remove 'TV Shows' from genres since it's redundant
     try:
         genres.remove('TV Shows')
     except:
         pass
+    # need to replace '/' since Kodi uses those to separate genres
+    for i in range(len(genres)):
+        genres[i] = genres[i].replace('/', ' & ')
+    # create one long string of genres and moods (if available)
     if moods:
+        for i in range(len(moods)):
+            moods[i].replace('/', ' & ')
         new_string = str(' / ').join(genres) + ' / ' + str(' / ').join(moods)
     else:
         new_string = str(' / ').join(genres)
+    # replace genre tag in .nfo file
     soup.find_all('genre')[0].string = new_string
+    # remove any other genre tags
     for ext_count in range(1, len(soup.find_all('genre'))):
         soup.find_all('genre')[1].decompose()
 
