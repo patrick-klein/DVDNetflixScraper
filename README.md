@@ -42,7 +42,7 @@ Create a new instance of the class.
 
 It will search for 'cookie.pkl' in the current directory and associate the cookies with the session.  If it's unable to find or load the file, the session will still initialize without cookies.  Alternatively, you can pass in an argument that specifies a pickle file containing the cookies.
 
-```>>> session = NetflixSession(cookies_file='~/some/other/file.pkl')```
+```>>> session = NetflixSession('~/some/other/file.pkl')```
 
 Load a movie by specifying a search string.  During this call, the webdriver will open a Chrome window to search for the movie.  Once it navigates to the correct page, it will store the parsed html into a variable and close the window.
 
