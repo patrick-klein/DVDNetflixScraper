@@ -62,6 +62,7 @@ def update_tvshow_nfo(tv_show_name=None,
     moods = session.get_moods()
     guess_rating = session.get_guess_rating()
     avg_rating = session.get_avg_rating()
+    num_votes = session.get_num_votes()
     img_url = session.get_image_link()
 
     # print the values for selected data
@@ -98,9 +99,9 @@ def update_tvshow_nfo(tv_show_name=None,
         if data_selections['genre-moods']:
             update_genre_moods(soup, genres, moods)
         if data_selections['best-guess-rating']:
-            update_rating(soup, guess_rating)
+            update_rating(soup, guess_rating, num_votes)
         if data_selections['avg-rating']:
-            update_rating(soup, avg_rating)
+            update_rating(soup, avg_rating, num_votes)
         if data_selections['landscape']:
             update_img(img_url)
         if data_selections['netflix-tag']:
@@ -170,6 +171,7 @@ def update_movie_nfo(movie_name_and_year=None,
     moods = session.get_moods()
     guess_rating = session.get_guess_rating()
     avg_rating = session.get_avg_rating()
+    num_votes = session.get_num_votes()
 
     # print the values for selected data
     print(' ')
@@ -203,9 +205,9 @@ def update_movie_nfo(movie_name_and_year=None,
         if data_selections['genre-moods']:
             update_genre_moods(soup, genres, moods)
         if data_selections['best-guess-rating']:
-            update_rating(soup, guess_rating)
+            update_rating(soup, guess_rating, num_votes)
         if data_selections['avg-rating']:
-            update_rating(soup, avg_rating)
+            update_rating(soup, avg_rating, num_votes)
         if data_selections['netflix-tag']:
             add_netflix_tag_movie(soup, movie_url)
     elif answer == 'c':
@@ -255,9 +257,9 @@ def update_genre_moods(soup, genres, moods):
         soup.find_all('genre')[1].decompose()
 
 
-def update_rating(soup, rating):
+def update_rating(soup, rating, num_votes):
     soup.find('rating').string = str(2 * rating)
-    soup.find('votes').string = str(0)
+    soup.find('votes').string = str(num_votes)
 
 
 def add_netflix_tag_tvshow(soup, show_url):

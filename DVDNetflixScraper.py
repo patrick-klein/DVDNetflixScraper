@@ -208,9 +208,19 @@ class NetflixSession:
         if self.cookies == None:
             return None
         rating_info = self.movie_page.find('div', id='ratingInfo')
-        avg_rating = rating_info.find_all('div')[1].find(
-            'span').get_text().split(' ')[0]
+        avg_rating = rating_info.find_all('div')[1].find('span').get_text().split(' ')[0]
         return float(avg_rating)
+
+    def get_num_votes(self):
+        """
+        This method parses movie page and returns number of votes for avg rating
+            or None if no cookies were provided
+        """
+        if self.cookies == None:
+            return None
+        rating_info = self.movie_page.find('div', id='ratingInfo')
+        num_votes = rating_info.find_all('div')[1].get_text().split(' ')[2]
+        return int(num_votes)
 
     def get_image_link(self):
         """This method parses movie page and returns the link to the image"""

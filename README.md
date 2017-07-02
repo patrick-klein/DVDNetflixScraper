@@ -11,9 +11,9 @@ A Python class that scrapes information for movies and TV shows from dvd.netflix
 
 ## Installation
 
-Git clone the project onto your computer 
+Git clone the project onto your computer
 
-A requirements file is included for convencience when installing the modules, 
+A requirements file is included for convencience when installing the modules,
 so you only need to run the following command:
 
 ```$ pip3 install -r requirements.txt```
@@ -101,7 +101,7 @@ If you're experiencing an error where chromedriver is not correctly quitting eve
 ```$ pkill -f chromedriver```
 
 # NetflixSession Methods
- 
+
 <table class="tg">
   <tr>
     <th class="tg-s6z2">Method</th>
@@ -151,8 +151,10 @@ movie_url: a string of a direct link to the webpage</td>
     <td class="tg-s6z2">Returns the average rating of the loaded movie as a float, or None if the session isn't signed in</td>
   </tr>
   <tr>
+    <td class="tg-s6z2">get_num_votes()</td>
+    <td class="tg-s6z2">Returns the number of votes for average rating of the loaded movie as an int, or None if the session isn't signed in</td>
+  </tr>
+  <tr>
     <td class="tg-s6z2">get_image_link()</td>
     <td class="tg-s6z2">Returns the link to the image of the loaded movie</td>
   </tr>
-
-
