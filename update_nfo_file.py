@@ -87,7 +87,7 @@ def update_tvshow_nfo(tv_show_name=None,
     #       (c)ustom selection
     #       (n)o to all
     print(' ')
-    answer = input('Save?    ')
+    answer = input('Save?(y/n/c) ')
 
     # update .nfo and save if 'y'
     if answer == 'y':
@@ -115,14 +115,14 @@ def update_tvshow_nfo(tv_show_name=None,
             update_rating(soup, guess_rating)
         #add_netflix_tag_tvshow(soup, movie_url)
 
-        # save the xml file
+    # save the xml file
     if answer != 'n':
         with open(path_to_tv_show_nfo, 'w') as f:
             f.write(str(soup))
         print(path_to_tv_show_nfo + ' updated.')
 
 
-def update_movie_nfo(movie_name_and_year,
+def update_movie_nfo(movie_name_and_year=None,
                      movies_folder='/Volumes/Media/Movies/',
                      data_selections={'plot': True,
                                       'outline': True,
@@ -137,6 +137,9 @@ def update_movie_nfo(movie_name_and_year,
     movies_folder: exact string to path of movies
     data_selections: dictionary of data in .nfo file to be updated
     """
+
+    if movie_name_and_year == None:
+        movie_name_and_year = input('Movie: ')
 
     # recover name and year from input
     movie_name = movie_name_and_year[:-7]
@@ -181,7 +184,7 @@ def update_movie_nfo(movie_name_and_year,
         print(moods)
     if data_selections['best-guess-rating']:
         print(' ')
-        print(soup.find('rating').get_text() + ' -> ' + str(guess_rating))
+        print(soup.find('rating').get_text() + ' -> ' + str(2*guess_rating))
     if data_selections['avg-rating']:
         print(' ')
         print(avg_rating)
@@ -190,7 +193,7 @@ def update_movie_nfo(movie_name_and_year,
     #       (y)es to selection
     #       (n)o to all
     print(' ')
-    answer = input('Save?(y/n) ')
+    answer = input('Save?(y/n/c) ')
 
     if answer == 'y':
         if data_selections['plot']:
@@ -205,9 +208,20 @@ def update_movie_nfo(movie_name_and_year,
             update_rating(soup, avg_rating)
         if data_selections['netflix-tag']:
             add_netflix_tag_movie(soup, movie_url)
-        # save the xml file
+    elif answer == 'c':
+        if input('Synopsis?       ') == 'y':
+            update_plot(soup, synopsis)
+            update_outline(soup, synopsis)
+        if input('Genre/moods?    ') == 'y':
+            update_genre_moods(soup, genres, moods)
+        if input('Rating?         ') == 'y':
+            update_rating(soup, guess_rating)
+
+    # save the xml file
+    if answer != 'n':
         with open(path_to_movie_nfo, 'w') as f:
             f.write(str(soup))
+        print(path_to_movie_nfo + ' updated.')
 
 
 def update_outline(soup, synopsis):
