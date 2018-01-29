@@ -33,7 +33,7 @@ class NetflixSession:
         try:
             self.cookies = pickle.load(open(cookies_file, "rb"))
             logging.info('Cookies loaded from ' + cookies_file)
-        except:
+        except IOError:
             self.cookies = None
             logging.info('No cookies were loaded on init')
 
@@ -104,7 +104,7 @@ class NetflixSession:
             else:
                 link_to_movie_page = result_url
                 break
-        if link_to_movie_page == None:
+        if not link_to_movie_page:
             logging.error('No matching movies were found')
             # print results and manually select
             print('No matches found.  Did you mean...')

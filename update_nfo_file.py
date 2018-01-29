@@ -16,13 +16,14 @@ from DVDNetflixScraper import NetflixSession
 
 
 def update_tvshow_nfo(tv_show_name=None,
-                      tv_show_folder='/Volumes/Media/TV/',
+                      direct_url=None,
+                      tv_show_folder='/Volumes/Drobo Media/LibraryTools/Metadata/TV/',
                       data_selections={'landscape': False,
-                                       'plot': True,
-                                       'outline': True,
+                                       'plot': False,
+                                       'outline': False,
                                        'genre-moods': True,
-                                       'best-guess-rating': True,
-                                       'avg-rating': False,
+                                       'best-guess-rating': False,
+                                       'avg-rating': True,
                                        'netflix-tag': True}):
     """
     This function updates .nfo files for TV shows.
@@ -50,6 +51,8 @@ def update_tvshow_nfo(tv_show_name=None,
     if soup.find('dvd-netflix-url'):
         show_url = soup.find('dvd-netflix-url').get_text()
         session.load_movie_with_url(show_url)
+    elif direct_url:
+        session.load_movie_with_url(direct_url)
     else:
         tv_show_year = int(soup.find('premiered').get_text()[0:4])
         print('TV show year: ' + str(tv_show_year))
@@ -64,6 +67,8 @@ def update_tvshow_nfo(tv_show_name=None,
     avg_rating = session.get_avg_rating()
     num_votes = session.get_num_votes()
     img_url = session.get_image_link()
+
+    soup_votes = int(soup.find('votes').get_text())
 
     # print the values for selected data
     print(' ')
@@ -81,7 +86,8 @@ def update_tvshow_nfo(tv_show_name=None,
         print(soup.find('rating').get_text() + ' -> ' + str(2 * guess_rating))
     if data_selections['avg-rating']:
         print(' ')
-        print(avg_rating)
+        print(soup.find('rating').get_text() + ' .. ' + str(2*avg_rating))
+        print(str(soup_votes) + ' .. ' + str(num_votes))
 
     # ask for confirmations here
     #       (y)es to selection
@@ -100,7 +106,7 @@ def update_tvshow_nfo(tv_show_name=None,
             update_genre_moods(soup, genres, moods)
         if data_selections['best-guess-rating']:
             update_rating(soup, guess_rating, num_votes)
-        if data_selections['avg-rating']:
+        if data_selections['avg-rating'] and num_votes>soup_votes:
             update_rating(soup, avg_rating, num_votes)
         if data_selections['landscape']:
             update_img(img_url)
@@ -113,8 +119,7 @@ def update_tvshow_nfo(tv_show_name=None,
         if input('Genre/moods?    ') == 'y':
             update_genre_moods(soup, genres, moods)
         if input('Rating?         ') == 'y':
-            update_rating(soup, guess_rating)
-        #add_netflix_tag_tvshow(soup, movie_url)
+            update_rating(soup, guess_rating, num_votes)
 
     # save the xml file
     if answer != 'n':
@@ -124,12 +129,13 @@ def update_tvshow_nfo(tv_show_name=None,
 
 
 def update_movie_nfo(movie_name_and_year=None,
-                     movies_folder='/Volumes/Media/Movies/',
-                     data_selections={'plot': True,
-                                      'outline': True,
+                     direct_url=None,
+                     movies_folder='/Volumes/Drobo Media/LibraryTools/Metadata/Movies/',
+                     data_selections={'plot': False,
+                                      'outline': False,
                                       'genre-moods': True,
-                                      'best-guess-rating': True,
-                                      'avg-rating': False,
+                                      'best-guess-rating': False,
+                                      'avg-rating': True,
                                       'netflix-tag': True}):
     """
     This function updates .nfo files for movies.
@@ -143,8 +149,12 @@ def update_movie_nfo(movie_name_and_year=None,
         movie_name_and_year = input('Movie: ')
 
     # recover name and year from input
-    movie_name = movie_name_and_year[:-7]
-    movie_year = int(movie_name_and_year[-5:-1])
+    if False and len(movie_name_and_year)>6 and movie_name_and_year[-6]=='(' and movie_name_and_year[-1]==')':
+        movie_name = movie_name_and_year[:-7]
+        movie_year = int(movie_name_and_year[-5:-1])
+    else:
+        movie_name = movie_name_and_year
+        movie_year = None
 
     # get folder of movie and .nfo file
     path_to_movie = movies_folder + movie_name_and_year + '/'
@@ -154,6 +164,10 @@ def update_movie_nfo(movie_name_and_year=None,
     with open(path_to_movie_nfo) as fp:
         soup = BeautifulSoup(fp, 'xml')
 
+    # recover year if needed
+    movie_year = int(soup.find_all('year')[0].string)
+    movie_name = str(soup.find_all('title')[0].string)
+
     # start session with scraper and search for movie
     session = NetflixSession()
 
@@ -161,8 +175,12 @@ def update_movie_nfo(movie_name_and_year=None,
     if soup.find('dvd-netflix-url'):
         movie_url = soup.find('dvd-netflix-url').get_text()
         session.load_movie_with_url(movie_url)
-    else:
+    elif direct_url:
+        session.load_movie_with_url(direct_url)
+    elif movie_year:
         session.load_movie(movie_name, movie_year)
+    else:
+        session.load_movie(movie_name)
 
     # scrape all of the data into variables
     movie_url = session.get_movie_url()
@@ -172,6 +190,8 @@ def update_movie_nfo(movie_name_and_year=None,
     guess_rating = session.get_guess_rating()
     avg_rating = session.get_avg_rating()
     num_votes = session.get_num_votes()
+
+    soup_votes = int(soup.find('votes').get_text())
 
     # print the values for selected data
     print(' ')
@@ -189,7 +209,8 @@ def update_movie_nfo(movie_name_and_year=None,
         print(soup.find('rating').get_text() + ' -> ' + str(2*guess_rating))
     if data_selections['avg-rating']:
         print(' ')
-        print(avg_rating)
+        print(soup.find('rating').get_text() + ' .. ' + str(2*avg_rating))
+        print(str(soup_votes) + ' .. ' + str(num_votes))
 
     # ask for confirmations here
     #       (y)es to selection
@@ -206,7 +227,7 @@ def update_movie_nfo(movie_name_and_year=None,
             update_genre_moods(soup, genres, moods)
         if data_selections['best-guess-rating']:
             update_rating(soup, guess_rating, num_votes)
-        if data_selections['avg-rating']:
+        if data_selections['avg-rating'] and num_votes>soup_votes:
             update_rating(soup, avg_rating, num_votes)
         if data_selections['netflix-tag']:
             add_netflix_tag_movie(soup, movie_url)
@@ -238,27 +259,27 @@ def update_genre_moods(soup, genres, moods):
     # remove 'TV Shows' from genres since it's redundant
     try:
         genres.remove('TV Shows')
-    except:
+    except ValueError:
         pass
     # need to replace '/' since Kodi uses those to separate genres
-    for i in range(len(genres)):
-        genres[i] = genres[i].replace('/', ' & ')
+    for genre in genres:
+        genre = genre.replace('/', ' & ')
     # create one long string of genres and moods (if available)
     if moods:
-        for i in range(len(moods)):
-            moods[i].replace('/', ' & ')
+        for mood in moods:
+            mood = mood.replace('/', ' & ')
         new_string = str(' / ').join(genres) + ' / ' + str(' / ').join(moods)
     else:
         new_string = str(' / ').join(genres)
     # replace genre tag in .nfo file
     soup.find_all('genre')[0].string = new_string
     # remove any other genre tags
-    for ext_count in range(1, len(soup.find_all('genre'))):
+    for _ in range(1, len(soup.find_all('genre'))):
         soup.find_all('genre')[1].decompose()
 
 
 def update_rating(soup, rating, num_votes):
-    soup.find('rating').string = str(2 * rating)
+    soup.find('rating').string = str(2.*rating)
     soup.find('votes').string = str(num_votes)
 
 

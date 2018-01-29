@@ -13,10 +13,12 @@ A Python class that scrapes information for movies and TV shows from dvd.netflix
 
 Git clone the project onto your computer
 
-A requirements file is included for convencience when installing the modules,
+A requirements file is included for convenience when installing the modules,
 so you only need to run the following command:
 
-```$ pip3 install -r requirements.txt```
+```bash
+$ pip3 install -r requirements.txt
+```
 
 Selenium also requires a driver to load the webpages, so simply download the latest version of [Chromedriver](http://chromedriver.storage.googleapis.com/index.html) and place it in your project folder.
 
@@ -34,23 +36,31 @@ Cookies of a valid Netflix session can be used to enable scraping unavailable ti
 
 Start by importing the module so that the class is available.
 
-```>>> from DVDNetflixScraper import NetflixSession```
+```python
+>>> from DVDNetflixScraper import NetflixSession
+```
 
 Create a new instance of the class.
 
-```>>> session = NetflixSession()```
+```python
+>>> session = NetflixSession()
+```
 
 It will search for 'cookie.pkl' in the current directory and associate the cookies with the session.  If it's unable to find or load the file, the session will still initialize without cookies.  Alternatively, you can pass in an argument that specifies a pickle file containing the cookies.
 
-```>>> session = NetflixSession('~/some/other/file.pkl')```
+```python
+>>> session = NetflixSession('~/some/other/file.pkl')
+```
 
 Load a movie by specifying a search string.  During this call, the webdriver will open a Chrome window to search for the movie.  Once it navigates to the correct page, it will store the parsed html into a variable and close the window.
 
-```>>> session.load_movie('Deliverance')```
+```python
+>>> session.load_movie('Deliverance')
+```
 
 The first result that is a close text match will be selected.  After the movie is loaded, you can save the url by calling the "get_movie_url()".
 
-```
+```python
 >>> deliverance_movie_url = session.get_movie_url()
 >>> deliverance_movie_url
 'https://dvd.netflix.com/Movie/Deliverance/433193?strackid=13c7f06deb5662ef_1_srl&trkid=201891639'
@@ -58,7 +68,7 @@ The first result that is a close text match will be selected.  After the movie i
 
 Now if you need to load the movie again in the future, you can pass the url directly to skip the search page.  You can verify this works by checking the name and year of the loaded movie.
 
-```
+```python
 >>> session.load_movie_with_url(deliverance_movie_url)
 >>> session.get_movie_name()
 'Deliverance'
@@ -68,7 +78,7 @@ Now if you need to load the movie again in the future, you can pass the url dire
 
 Because there is ambiguity with some movies/shows, you can also specify the year when loading from a search.  This will only load a result if it matches +/- 1 year.
 
-```
+```python
 >>> session.load_movie('Alice in Wonderland',2010)
 >>> session.get_movie_url()
 'https://dvd.netflix.com/Movie/Alice-in-Wonderland/70113536?strackid=206e723a68719b5d_1_srl&trkid=201891639'
@@ -79,7 +89,7 @@ Because there is ambiguity with some movies/shows, you can also specify the year
 
 Now that the correct movie has loaded, you can start pulling data from the saved html.  Currently, you can pull the synopsis, image url, genres, and moods, as well as the ratings if you are signed in.
 
-```
+```python
 >>> session.get_synopsis()
 "Disney's animated, musical retelling of Lewis Carroll's whimsical tale follows young Alice as she falls down a rabbit hole and enters a strange and wonderful world that is home to the Mad Hatter, the Cheshire Cat and the terrifying Queen of Hearts."
 >>> session.get_genres()
@@ -98,7 +108,9 @@ Now that the correct movie has loaded, you can start pulling data from the saved
 
 If you're experiencing an error where chromedriver is not correctly quitting every time, you can kill all of these instances using the following command on macOS:
 
-```$ pkill -f chromedriver```
+```bash
+$ pkill -f chromedriver
+```
 
 # NetflixSession Methods
 
